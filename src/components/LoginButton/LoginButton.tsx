@@ -16,7 +16,11 @@ function LoginButton({ loggedIn }: LoginButtonProps) {
   }
 
   return (
-    <Button color="inherit" variant="outlined" href="/">
+    <Button
+      color="inherit"
+      variant="outlined"
+      href="http://localhost:8080/login"
+    >
       Login
     </Button>
   );
