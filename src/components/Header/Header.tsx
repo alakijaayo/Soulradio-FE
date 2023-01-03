@@ -5,7 +5,7 @@ import { StyledHeader, StyledToolbar, Text } from "./Header.style";
 function Header() {
   return (
     <>
-      <StyledHeader>
+      <StyledHeader position="static">
         <StyledToolbar>
           <Avatar>HI</Avatar>
           <Text variant="h4">SoulRadio</Text>
