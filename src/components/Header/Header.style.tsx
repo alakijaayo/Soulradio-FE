@@ -17,3 +17,11 @@ export const Text = styled(Typography)`
     font-size: 34px;
   }
 `;
+
+export const StyledImage = styled("img")`
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #cccccc;
+`;

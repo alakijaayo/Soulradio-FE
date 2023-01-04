@@ -1,13 +1,11 @@
 import { Button } from "@mui/material";
 
 interface LoginButtonProps {
-  loggedIn: string;
-  // login: string;
-  // logout: string;
+  loggedIn: boolean;
 }
 
 function LoginButton({ loggedIn }: LoginButtonProps) {
-  if (loggedIn === "true") {
+  if (loggedIn) {
     return (
       <Button color="inherit" variant="outlined" href="/">
         Logout
