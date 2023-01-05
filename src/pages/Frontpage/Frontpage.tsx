@@ -1,4 +1,5 @@
 import { Grid, Typography } from "@mui/material";
+import SearchSongs from "../../components/SearchSongs";
 import { HomeWrapper, StyledGrid } from "./Frontpage.style";
 
 interface FrontpageProps {
@@ -11,7 +12,7 @@ function FrontPage({ loggedIn }: FrontpageProps) {
       {loggedIn ? (
         <StyledGrid container>
           <Grid item md={3}>
-            <h1>check</h1>
+            <SearchSongs />
           </Grid>
           <Grid item md={6}>
             <h1>test</h1>
