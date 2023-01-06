@@ -1,22 +1,22 @@
 import { Avatar } from "@mui/material";
-import { User } from "../../models/user";
 import LoginButton from "../LoginButton";
 import { StyledHeader, StyledToolbar, Text } from "./Header.style";
 
 interface HeaderProps {
-  loggedIn: boolean;
-  userData: User;
+  userImage?: string;
 }
 
-function Header({ loggedIn, userData }: HeaderProps) {
-  const { userImage } = userData;
+function Header({ userImage }: HeaderProps) {
+  const query = window.location.pathname;
+  const loggedIn = query === "/home";
+
   return (
     <>
       <StyledHeader position="static">
         <StyledToolbar>
           {loggedIn ? <Avatar src={userImage}>AA</Avatar> : <Avatar>HI</Avatar>}
           <Text variant="h4">SoulRadio</Text>
-          <LoginButton loggedIn={loggedIn}></LoginButton>
+          <LoginButton loggedIn={loggedIn} />
         </StyledToolbar>
       </StyledHeader>
     </>
