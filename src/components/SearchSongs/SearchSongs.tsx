@@ -24,8 +24,6 @@ function SearchSongs() {
         setTrackInfo([]);
         const trackArray: Tracks[] = [];
         response.items.forEach((track: Track) => {
-          console.log(track);
-
           trackArray.push({
             trackName: track.name,
             trackArtist: track.artists[0].name,
@@ -37,6 +35,11 @@ function SearchSongs() {
         });
         setTrackInfo(trackArray);
       });
+  };
+
+  const playTrack = async (id: string) => {
+    const playURL = "http://localhost:8080/play?trackid=" + id;
+    fetch(playURL);
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +72,7 @@ function SearchSongs() {
               <SongTitle>{track.trackName}</SongTitle>
               <ArtistName>{track.trackArtist}</ArtistName>
             </TrackInfo>
-            <AddCircleIcon />
+            <AddCircleIcon onClick={() => playTrack(track.trackuri)} />
           </SongInfo>
         ))}
       </SongList>
