@@ -12,7 +12,11 @@ import {
   Wrapper,
 } from "./SearchSongs.style";
 
-function SearchSongs() {
+interface SearchSongsProps {
+  deviceID: string;
+}
+
+function SearchSongs({ deviceID }: SearchSongsProps) {
   const [trackName, setTrackName] = useState("");
   const [trackInfo, setTrackInfo] = useState<Tracks[]>([]);
   const URL = "http://localhost:8080/searchtrack?track=" + trackName;
@@ -38,7 +42,7 @@ function SearchSongs() {
   };
 
   const playTrack = async (id: string) => {
-    const playURL = "http://localhost:8080/play?trackid=" + id;
+    const playURL = `http://localhost:8080/play?trackid=${id}&device_id=${deviceID}`;
     fetch(playURL);
   };
 
