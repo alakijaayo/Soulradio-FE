@@ -1,4 +1,6 @@
-import { Dispatch, useEffect } from "react";
+import { Grid, Typography } from "@mui/material";
+import { Dispatch, useEffect, useState } from "react";
+import { StyledGrid, Text, TextGrid, Wrapper } from "./Player.style";
 
 interface PlayerProps {
   accessToken: string;
@@ -6,6 +8,8 @@ interface PlayerProps {
 }
 
 function Player({ accessToken, setDeviceID }: PlayerProps) {
+  const [current_track, setTrack] = useState<Spotify.Track | null>(null);
+
   useEffect(() => {
     if (accessToken !== "") {
       const script = document.createElement("script");
@@ -50,18 +54,47 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
         });
 
         player.addListener("player_state_changed", (state) => {
-          console.log(state);
+          setTrack(state.track_window.current_track);
+
+          player.getCurrentState().then((state) => {
+            if (!state) {
+              console.log("no state");
+            }
+          });
         });
 
-        player.connect();
-        player
-          .getCurrentState()
-          .then((response) => console.log(response?.context));
+        player.connect().then((success) => {
+          if (success) {
+            console.log(
+              "The Web Playback SDK successfully connected to Spotify!"
+            );
+          }
+        });
+        player.activateElement();
       };
     }
   }, [accessToken, setDeviceID]);
 
-  return <h1>Hello World</h1>;
+  return (
+    <Wrapper>
+      <StyledGrid container>
+        <Grid item md={6}>
+          <img src={current_track?.album.images[0].url} alt="Now Playing" />
+        </Grid>
+        <TextGrid item md={6}>
+          <Text variant="h5">Currently Playing</Text>
+          <Typography variant="h5" gutterBottom>
+            {current_track?.name ? current_track.name : "Nothing to play!"}
+          </Typography>
+          <Typography variant="h5" gutterBottom>
+            {current_track?.artists[0].name
+              ? current_track.artists[0].name
+              : "Add a track to the queue"}
+          </Typography>
+        </TextGrid>
+      </StyledGrid>
+    </Wrapper>
+  );
 }
 
 export default Player;

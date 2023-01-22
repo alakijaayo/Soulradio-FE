@@ -41,9 +41,17 @@ function SearchSongs({ deviceID }: SearchSongsProps) {
       });
   };
 
-  const playTrack = async (id: string) => {
-    const playURL = `http://localhost:8080/play?trackid=${id}&device_id=${deviceID}`;
-    fetch(playURL);
+  const playTrack = async (uri: string) => {
+    const playURL = `http://localhost:8080/play?device_id=${deviceID}`;
+    fetch(playURL, {
+      method: "PUT",
+      body: JSON.stringify({
+        uri: [uri],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
