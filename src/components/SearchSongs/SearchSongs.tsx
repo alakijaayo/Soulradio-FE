@@ -1,6 +1,6 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Dispatch, useState } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { Track, Tracks } from "../../models/TrackData";
+import { QueuedTracks, Track, Tracks } from "../../models/TrackData";
 import {
   ArtistName,
   SearchButton,
@@ -14,9 +14,10 @@ import {
 
 interface SearchSongsProps {
   deviceID: string;
+  setQueuedTracks: Dispatch<React.SetStateAction<QueuedTracks[]>>;
 }
 
-function SearchSongs({ deviceID }: SearchSongsProps) {
+function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
   const [trackName, setTrackName] = useState("");
   const [trackInfo, setTrackInfo] = useState<Tracks[]>([]);
   const URL = "http://localhost:8080/searchtrack?track=" + trackName;
@@ -26,6 +27,7 @@ function SearchSongs({ deviceID }: SearchSongsProps) {
       .then((response) => response.json())
       .then((response) => {
         setTrackInfo([]);
+
         const trackArray: Tracks[] = [];
         response.items.forEach((track: Track) => {
           trackArray.push({
@@ -33,7 +35,7 @@ function SearchSongs({ deviceID }: SearchSongsProps) {
             trackArtist: track.artists[0].name,
             trackuri: track.uri,
             trackImage: track.album.images,
-            trackDuraction: track.durationMs,
+            trackDuration: track.durationMs,
             trackId: track.id,
           });
         });
@@ -41,17 +43,22 @@ function SearchSongs({ deviceID }: SearchSongsProps) {
       });
   };
 
-  const playTrack = async (uri: string) => {
+  const playTrack = async (track: Tracks) => {
     const playURL = `http://localhost:8080/play?device_id=${deviceID}`;
     fetch(playURL, {
       method: "PUT",
       body: JSON.stringify({
-        uri: [uri],
+        name: track.trackName,
+        artist: track.trackArtist,
+        image: track.trackImage[2].url,
+        uri: [track.trackuri],
       }),
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
+      .then((response) => response.json())
+      .then((response) => setQueuedTracks(response));
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,7 +91,7 @@ function SearchSongs({ deviceID }: SearchSongsProps) {
               <SongTitle>{track.trackName}</SongTitle>
               <ArtistName>{track.trackArtist}</ArtistName>
             </TrackInfo>
-            <AddCircleIcon onClick={() => playTrack(track.trackuri)} />
+            <AddCircleIcon onClick={() => playTrack(track)} />
           </SongInfo>
         ))}
       </SongList>

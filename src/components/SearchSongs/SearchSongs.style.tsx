@@ -18,7 +18,7 @@ export const SongList = styled("div")`
   height: 100%;
   margin-top: 30px;
   height: 80vh;
-  width: 85%;
+  width: 95%;
 `;
 
 export const SongInfo = styled("div")`

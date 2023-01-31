@@ -11,6 +11,12 @@ export interface Album {
   images: Images[];
 }
 
+export interface QueuedTracks {
+  image: string;
+  name: string;
+  artist: string;
+}
+
 export interface Track {
   name: string;
   artists: Artists[];
@@ -25,6 +31,6 @@ export interface Tracks {
   trackArtist: string;
   trackuri: string;
   trackImage: Images[];
-  trackDuraction: string;
+  trackDuration: string;
   trackId: string;
 }

@@ -55,12 +55,6 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
 
         player.addListener("player_state_changed", (state) => {
           setTrack(state.track_window.current_track);
-
-          player.getCurrentState().then((state) => {
-            if (!state) {
-              console.log("no state");
-            }
-          });
         });
 
         player.connect().then((success) => {
@@ -69,8 +63,8 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
               "The Web Playback SDK successfully connected to Spotify!"
             );
           }
+          player.activateElement();
         });
-        player.activateElement();
       };
     }
   }, [accessToken, setDeviceID]);
