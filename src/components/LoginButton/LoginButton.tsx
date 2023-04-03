@@ -24,6 +24,4 @@ function LoginButton({ loggedIn }: LoginButtonProps) {
   );
 }
 
-// { loggedIn, login, logout }: LoginButtonProps
-
 export default LoginButton;

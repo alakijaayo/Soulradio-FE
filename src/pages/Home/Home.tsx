@@ -18,8 +18,6 @@ function Home() {
   const [accessToken, setAccessToken] = useState("");
   const [deviceID, setDeviceID] = useState("");
 
-  console.log(queuedTracks);
-
   useEffect(() => {
     fetch("http://localhost:8080/username")
       .then((response) => response.json())

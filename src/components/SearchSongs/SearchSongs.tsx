@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { QueuedTracks, Track, Tracks } from "../../models/TrackData";
 import {
@@ -14,7 +14,7 @@ import {
 
 interface SearchSongsProps {
   deviceID: string;
-  setQueuedTracks: Dispatch<React.SetStateAction<QueuedTracks[]>>;
+  setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
 }
 
 function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
@@ -44,7 +44,7 @@ function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
   };
 
   const playTrack = async (track: Tracks) => {
-    const playURL = `http://localhost:8080/play?device_id=${deviceID}`;
+    const playURL = `http://localhost:8080/queuetrack?device_id=${deviceID}`;
     fetch(playURL, {
       method: "PUT",
       body: JSON.stringify({

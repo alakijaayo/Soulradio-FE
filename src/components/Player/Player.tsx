@@ -47,7 +47,23 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
         player.addListener("ready", ({ device_id }) => {
           setDeviceID(device_id);
           console.log("Ready with Device ID", device_id);
+          player.addListener("player_state_changed", (state) => {
+            console.log(state);
+          });
         });
+
+        // player.addListener("ready", ({ device_id }) => {
+        //   player.getCurrentState().then((state) => {
+        //     if (!state) {
+        //       fetch(`http://localhost:8080/play?device_id=${device_id}`, {
+        //         method: "PUT",
+        //         headers: {
+        //           "Content-Type": "application/json",
+        //         },
+        //       });
+        //     }
+        //   });
+        // });
 
         player.addListener("not_ready", ({ device_id }) => {
           console.log("Device ID has gone offline", device_id);
@@ -55,6 +71,7 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
 
         player.addListener("player_state_changed", (state) => {
           setTrack(state.track_window.current_track);
+          console.log(state.track_window.current_track);
         });
 
         player.connect().then((success) => {
@@ -63,7 +80,6 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
               "The Web Playback SDK successfully connected to Spotify!"
             );
           }
-          player.activateElement();
         });
       };
     }
