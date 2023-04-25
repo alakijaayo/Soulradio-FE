@@ -41,7 +41,11 @@ function Home() {
           <SearchSongs deviceID={deviceID} setQueuedTracks={setQueuedTracks} />
         </Grid>
         <Grid item md={6}>
-          <Player accessToken={accessToken} setDeviceID={setDeviceID} />
+          <Player
+            accessToken={accessToken}
+            setDeviceID={setDeviceID}
+            setQueuedTracks={setQueuedTracks}
+          />
           <h1>testing</h1>
         </Grid>
         <Grid item md={3}>

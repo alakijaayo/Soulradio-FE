@@ -1,14 +1,17 @@
 import { Grid, Typography } from "@mui/material";
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyledGrid, Text, TextGrid, Wrapper } from "./Player.style";
+import { QueuedTracks } from "../../models/TrackData";
 
 interface PlayerProps {
   accessToken: string;
-  setDeviceID: Dispatch<React.SetStateAction<string>>;
+  setDeviceID: Dispatch<SetStateAction<string>>;
+  setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
 }
 
-function Player({ accessToken, setDeviceID }: PlayerProps) {
+function Player({ accessToken, setDeviceID, setQueuedTracks }: PlayerProps) {
   const [current_track, setTrack] = useState<Spotify.Track | null>(null);
+  // const [is_active, setActive] = useState<boolean>(false);
 
   useEffect(() => {
     if (accessToken !== "") {
@@ -28,50 +31,29 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
           },
         });
 
-        player.addListener("initialization_error", ({ message }) => {
-          console.error(message);
-        });
-
-        player.addListener("authentication_error", ({ message }) => {
-          console.error(message);
-        });
-
-        player.addListener("account_error", ({ message }) => {
-          console.error(message);
-        });
-
-        player.addListener("playback_error", ({ message }) => {
-          console.error(message);
-        });
-
         player.addListener("ready", ({ device_id }) => {
           setDeviceID(device_id);
           console.log("Ready with Device ID", device_id);
-          player.addListener("player_state_changed", (state) => {
-            console.log(state);
-          });
-        });
-
-        // player.addListener("ready", ({ device_id }) => {
-        //   player.getCurrentState().then((state) => {
-        //     if (!state) {
-        //       fetch(`http://localhost:8080/play?device_id=${device_id}`, {
-        //         method: "PUT",
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //         },
-        //       });
-        //     }
-        //   });
-        // });
-
-        player.addListener("not_ready", ({ device_id }) => {
-          console.log("Device ID has gone offline", device_id);
         });
 
         player.addListener("player_state_changed", (state) => {
           setTrack(state.track_window.current_track);
-          console.log(state.track_window.current_track);
+          if (state.duration === state.position) {
+            console.log("song ended");
+
+            fetch("http://localhost:8080/play", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => response.json())
+              .then((response) => setQueuedTracks(response));
+          }
+        });
+
+        player.addListener("not_ready", ({ device_id }) => {
+          console.log("Device ID has gone offline", device_id);
         });
 
         player.connect().then((success) => {
@@ -83,7 +65,7 @@ function Player({ accessToken, setDeviceID }: PlayerProps) {
         });
       };
     }
-  }, [accessToken, setDeviceID]);
+  }, [accessToken, setDeviceID, setQueuedTracks]);
 
   return (
     <Wrapper>
