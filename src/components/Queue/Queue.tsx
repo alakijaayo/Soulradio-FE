@@ -53,6 +53,7 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
             <Votes>
               <VoteUpButton
                 disableRipple
+                disabled={track.votesUp === 1 || track.votesDown === 1}
                 active={track.votesUp.toString()}
                 onClick={() => handleOnVote(idx, "up")}
               >
@@ -60,6 +61,7 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
               </VoteUpButton>
               <VoteDownButton
                 disableRipple
+                disabled={track.votesUp === 1 || track.votesDown === 1}
                 active={track.votesDown.toString()}
                 onClick={() => handleOnVote(idx, "down")}
               >
