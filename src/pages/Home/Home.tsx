@@ -49,7 +49,10 @@ function Home() {
           <h1>testing</h1>
         </Grid>
         <Grid item md={3}>
-          <Queue queuedTracks={queuedTracks} />
+          <Queue
+            queuedTracks={queuedTracks}
+            setQueuedTracks={setQueuedTracks}
+          />
         </Grid>
       </StyledGrid>
     </Layout>

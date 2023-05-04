@@ -52,6 +52,8 @@ function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
         artist: track.trackArtist,
         image: track.trackImage[2].url,
         uri: [track.trackuri],
+        votesUp: 0,
+        votesDown: 0,
       }),
       headers: {
         "Content-Type": "application/json",

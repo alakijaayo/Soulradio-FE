@@ -3,7 +3,7 @@ interface Images {
   url: string;
   width: number;
 }
-interface URI {
+export interface URI {
   uri: string;
 }
 export interface Artists {
@@ -18,6 +18,8 @@ export interface QueuedTracks {
   name: string;
   artist: string;
   uri: URI[];
+  votesUp: number;
+  votesDown: number;
 }
 
 export interface Track {

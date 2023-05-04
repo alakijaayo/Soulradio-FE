@@ -11,7 +11,6 @@ interface PlayerProps {
 
 function Player({ accessToken, setDeviceID, setQueuedTracks }: PlayerProps) {
   const [current_track, setTrack] = useState<Spotify.Track | null>(null);
-  // const [is_active, setActive] = useState<boolean>(false);
 
   useEffect(() => {
     if (accessToken !== "") {
@@ -30,6 +29,16 @@ function Player({ accessToken, setDeviceID, setQueuedTracks }: PlayerProps) {
             cb(accessToken);
           },
         });
+
+        player.connect().then((success) => {
+          if (success) {
+            console.log(
+              "The Web Playback SDK successfully connected to Spotify!"
+            );
+          }
+        });
+
+        player.activateElement();
 
         player.addListener("ready", ({ device_id }) => {
           setDeviceID(device_id);
@@ -54,14 +63,6 @@ function Player({ accessToken, setDeviceID, setQueuedTracks }: PlayerProps) {
 
         player.addListener("not_ready", ({ device_id }) => {
           console.log("Device ID has gone offline", device_id);
-        });
-
-        player.connect().then((success) => {
-          if (success) {
-            console.log(
-              "The Web Playback SDK successfully connected to Spotify!"
-            );
-          }
         });
       };
     }

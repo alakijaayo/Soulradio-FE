@@ -1,4 +1,8 @@
-import { styled, Typography } from "@mui/material";
+import { IconButton, styled, Typography, css } from "@mui/material";
+
+interface ColorProps {
+  active: string;
+}
 
 export const QueueList = styled("div")`
   overflow: scroll;
@@ -34,4 +38,33 @@ export const SongTitle = styled(Typography)`
 export const ArtistName = styled(Typography)`
   text-align: center;
   font-size: 12px;
+`;
+
+export const VotesCount = styled(Typography)`
+  text-align: center;
+  font-size: 12px;
+`;
+
+export const VoteUpButton = styled(IconButton)<ColorProps>`
+  svg {
+    color: black;
+
+    ${({ active }) =>
+      active === "1" &&
+      css`
+        color: green;
+      `}
+  }
+`;
+
+export const VoteDownButton = styled(IconButton)<ColorProps>`
+  svg {
+    color: black;
+
+    ${({ active }) =>
+      active === "1" &&
+      css`
+        color: red;
+      `}
+  }
 `;
