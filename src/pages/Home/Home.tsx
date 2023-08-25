@@ -7,6 +7,10 @@ import Layout from "../../layout";
 import { QueuedTracks } from "../../models/TrackData";
 import { User } from "../../models/user";
 import { StyledGrid } from "./Home.style";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+
+const SOCKET_URL = "http://localhost:8080/ws-message";
 
 function Home() {
   const [userData, setUserData] = useState<User>({
@@ -17,8 +21,34 @@ function Home() {
   const [queuedTracks, setQueuedTracks] = useState<QueuedTracks[]>([]);
   const [accessToken, setAccessToken] = useState("");
   const [deviceID, setDeviceID] = useState("");
+  const [message, setMessage] = useState("Your Message Shows Here");
+  const socket = new SockJS(SOCKET_URL);
+  const stompClient = Stomp.over(socket);
+
+  const onConnected = () => {
+    console.log("Connected!!");
+    stompClient.subscribe("/topic/user", onMessageReceived);
+  };
+
+  const sendMessage = () => {
+    if (stompClient) {
+      let chatMessage = {
+        name: "ayodele alakija",
+        message: "Testing message",
+      };
+      stompClient.send("/app/topic-message", {}, JSON.stringify(chatMessage));
+    }
+  };
+
+  const onMessageReceived = (msg: any) => {
+    console.log("Message Received");
+    const message = JSON.parse(msg.body);
+    console.log(message.name);
+    setMessage(message.message);
+  };
 
   useEffect(() => {
+    stompClient.connect({}, onConnected);
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
       .then((response) =>
@@ -32,6 +62,7 @@ function Home() {
     fetch("http://localhost:8080/token")
       .then((response) => response.json())
       .then((response) => setAccessToken(response.token));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -46,7 +77,8 @@ function Home() {
             setDeviceID={setDeviceID}
             setQueuedTracks={setQueuedTracks}
           />
-          <h1>testing</h1>
+          <div>{message}</div>
+          <button onClick={sendMessage}>click</button>
         </Grid>
         <Grid item md={3}>
           <Queue

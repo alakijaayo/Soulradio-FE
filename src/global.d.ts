@@ -201,3 +201,5 @@ declare global {
     }
   }
 }
+
+declare module "react-stomp";
