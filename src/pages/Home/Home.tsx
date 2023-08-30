@@ -9,8 +9,10 @@ import { User } from "../../models/user";
 import { StyledGrid } from "./Home.style";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import Chat from "../../components/Chat/Chat";
+import { Message } from "../../models/Message";
 
-const SOCKET_URL = "http://localhost:8080/ws-message";
+const SOCKET_URL = "http://localhost:8080/soulradio";
 
 function Home() {
   const [userData, setUserData] = useState<User>({
@@ -21,30 +23,32 @@ function Home() {
   const [queuedTracks, setQueuedTracks] = useState<QueuedTracks[]>([]);
   const [accessToken, setAccessToken] = useState("");
   const [deviceID, setDeviceID] = useState("");
-  const [message, setMessage] = useState("Your Message Shows Here");
+  const [message, setMessage] = useState("");
+  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const socket = new SockJS(SOCKET_URL);
   const stompClient = Stomp.over(socket);
 
   const onConnected = () => {
     console.log("Connected!!");
-    stompClient.subscribe("/topic/user", onMessageReceived);
+    stompClient.subscribe("/topic/messages", onMessageReceived);
   };
 
   const sendMessage = () => {
     if (stompClient) {
       let chatMessage = {
-        name: "ayodele alakija",
-        message: "Testing message",
+        name: userData.username,
+        image: userData.userImage,
+        message: message,
       };
-      stompClient.send("/app/topic-message", {}, JSON.stringify(chatMessage));
+      stompClient.send("/app/sendmessage", {}, JSON.stringify(chatMessage));
+      setMessage("");
     }
   };
 
   const onMessageReceived = (msg: any) => {
     console.log("Message Received");
-    const message = JSON.parse(msg.body);
-    console.log(message.name);
-    setMessage(message.message);
+    const receivedMessage = JSON.parse(msg.body);
+    setReceivedMessages((prevState) => [...prevState, receivedMessage]);
   };
 
   useEffect(() => {
@@ -71,14 +75,23 @@ function Home() {
         <Grid item md={3}>
           <SearchSongs deviceID={deviceID} setQueuedTracks={setQueuedTracks} />
         </Grid>
-        <Grid item md={6}>
-          <Player
-            accessToken={accessToken}
-            setDeviceID={setDeviceID}
-            setQueuedTracks={setQueuedTracks}
-          />
-          <div>{message}</div>
-          <button onClick={sendMessage}>click</button>
+        <Grid item md={6} container direction="column">
+          <Grid item>
+            <Player
+              accessToken={accessToken}
+              setDeviceID={setDeviceID}
+              setQueuedTracks={setQueuedTracks}
+            />
+          </Grid>
+          <Grid alignItems="center">
+            <Chat
+              message={message}
+              sendMessage={sendMessage}
+              setMessage={setMessage}
+              receivedMessages={receivedMessages}
+              username={userData.username}
+            />
+          </Grid>
         </Grid>
         <Grid item md={3}>
           <Queue
