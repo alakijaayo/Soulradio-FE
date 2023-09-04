@@ -6,6 +6,8 @@ import {
   QueuedTracksInfo,
   QueueList,
   SongTitle,
+  Subtitle,
+  Text,
   TrackInfo,
   VoteDownButton,
   Votes,
@@ -37,41 +39,39 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
   };
 
   return (
-    <>
-      <h1>Up Next</h1>
-      <h3>Vote on your favourite track!</h3>
+    <QueueList>
+      <Text>Up Next</Text>
+      <Subtitle>Vote on your favourite track!</Subtitle>
 
-      <QueueList>
-        {queuedTracks.map((track, idx) => (
-          <QueuedTracksInfo key={`${track.artist} ${track.name} ${idx}`}>
-            <img src={track.image} alt={track.name} />
-            <TrackInfo>
-              <SongTitle>{track.name}</SongTitle>
-              <ArtistName>{track.artist}</ArtistName>
-              <VotesCount>Votes: {track.votesUp - track.votesDown}</VotesCount>
-            </TrackInfo>
-            <Votes>
-              <VoteUpButton
-                disableRipple
-                disabled={track.votesUp === 1 || track.votesDown === 1}
-                active={track.votesUp.toString()}
-                onClick={() => handleOnVote(idx, "up")}
-              >
-                <ThumbUpAltIcon />
-              </VoteUpButton>
-              <VoteDownButton
-                disableRipple
-                disabled={track.votesUp === 1 || track.votesDown === 1}
-                active={track.votesDown.toString()}
-                onClick={() => handleOnVote(idx, "down")}
-              >
-                <ThumbDownAltIcon />
-              </VoteDownButton>
-            </Votes>
-          </QueuedTracksInfo>
-        ))}
-      </QueueList>
-    </>
+      {queuedTracks.map((track, idx) => (
+        <QueuedTracksInfo key={`${track.artist} ${track.name} ${idx}`}>
+          <img src={track.image} alt={track.name} />
+          <TrackInfo>
+            <SongTitle>{track.name}</SongTitle>
+            <ArtistName>{track.artist}</ArtistName>
+            <VotesCount>Votes: {track.votesUp - track.votesDown}</VotesCount>
+          </TrackInfo>
+          <Votes>
+            <VoteUpButton
+              disableRipple
+              disabled={track.votesUp === 1 || track.votesDown === 1}
+              active={track.votesUp.toString()}
+              onClick={() => handleOnVote(idx, "up")}
+            >
+              <ThumbUpAltIcon />
+            </VoteUpButton>
+            <VoteDownButton
+              disableRipple
+              disabled={track.votesUp === 1 || track.votesDown === 1}
+              active={track.votesDown.toString()}
+              onClick={() => handleOnVote(idx, "down")}
+            >
+              <ThumbDownAltIcon />
+            </VoteDownButton>
+          </Votes>
+        </QueuedTracksInfo>
+      ))}
+    </QueueList>
   );
 }
 

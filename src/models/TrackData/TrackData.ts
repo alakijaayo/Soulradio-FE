@@ -1,7 +1,8 @@
-interface Images {
-  height: number;
+interface Image {
+  height?: number | null | undefined;
   url: string;
-  width: number;
+  size?: string | null | undefined;
+  width?: number | null | undefined;
 }
 export interface URI {
   uri: string;
@@ -10,7 +11,9 @@ export interface Artists {
   name: string;
 }
 export interface Album {
-  images: Images[];
+  name: string;
+  uri: string;
+  images: Image[];
 }
 
 export interface QueuedTracks {
@@ -27,15 +30,16 @@ export interface Track {
   artists: Artists[];
   uri: string;
   album: Album;
-  durationMs: string;
-  id: string;
+  durationMs: number;
+  id: string | null;
+  timestamp?: number;
 }
 
 export interface Tracks {
   trackName: string;
   trackArtist: string;
   trackuri: string;
-  trackImage: Images[];
-  trackDuration: string;
-  trackId: string;
+  trackImage: Image[];
+  trackDuration: number;
+  trackId: string | null;
 }

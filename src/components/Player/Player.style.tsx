@@ -1,7 +1,10 @@
 import { Grid, styled, Typography } from "@mui/material";
 
 export const Wrapper = styled("div")`
-  margin: 2rem;
+  min-height: 320px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
 `;
 
 export const Text = styled(Typography)`

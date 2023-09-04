@@ -1,7 +1,7 @@
 import { Grid, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { StyledGrid, Text, TextGrid, Wrapper } from "./Player.style";
-import { QueuedTracks } from "../../models/TrackData";
+import { QueuedTracks, Track } from "../../models/TrackData";
 
 interface PlayerProps {
   accessToken: string;
@@ -10,63 +10,76 @@ interface PlayerProps {
 }
 
 function Player({ accessToken, setDeviceID, setQueuedTracks }: PlayerProps) {
-  const [current_track, setTrack] = useState<Spotify.Track | null>(null);
+  const [current_track, setTrack] = useState<Track | null>(null);
+
+  const playNextTrack = () => {
+    console.log("song ended");
+
+    fetch("http://localhost:8080/play", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => setQueuedTracks(response));
+  };
 
   useEffect(() => {
-    if (accessToken !== "") {
-      const script = document.createElement("script");
-      script.src = "https://sdk.scdn.co/spotify-player.js";
-      script.async = true;
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
 
-      document.body.appendChild(script);
+    document.body.appendChild(script);
 
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        console.log("creating player");
+    window.onSpotifyWebPlaybackSDKReady = () => {
+      console.log("creating player");
 
-        const player = new window.Spotify.Player({
-          name: "SoulRadio",
-          getOAuthToken: (cb) => {
-            cb(accessToken);
-          },
+      const player = new window.Spotify.Player({
+        name: "SoulRadio",
+        getOAuthToken: (cb) => {
+          cb(accessToken);
+        },
+      });
+
+      player.connect().then((success) => {
+        if (success) {
+          console.log(
+            "The Web Playback SDK successfully connected to Spotify!"
+          );
+        }
+      });
+
+      player.activateElement();
+
+      player.addListener("ready", ({ device_id }) => {
+        setDeviceID(device_id);
+        console.log("Ready with Device ID", device_id);
+      });
+
+      player.addListener("player_state_changed", (state) => {
+        const { track_window, timestamp } = state;
+        const { current_track } = track_window;
+        setTrack({
+          name: current_track.name,
+          artists: current_track.artists,
+          uri: current_track.uri,
+          album: current_track.album,
+          durationMs: current_track.duration_ms,
+          id: current_track.id,
+          timestamp,
         });
 
-        player.connect().then((success) => {
-          if (success) {
-            console.log(
-              "The Web Playback SDK successfully connected to Spotify!"
-            );
-          }
-        });
+        if (state.duration === state.position) {
+          console.log("hello");
+        }
+      });
 
-        player.activateElement();
-
-        player.addListener("ready", ({ device_id }) => {
-          setDeviceID(device_id);
-          console.log("Ready with Device ID", device_id);
-        });
-
-        player.addListener("player_state_changed", (state) => {
-          setTrack(state.track_window.current_track);
-          if (state.duration === state.position) {
-            console.log("song ended");
-
-            fetch("http://localhost:8080/play", {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            })
-              .then((response) => response.json())
-              .then((response) => setQueuedTracks(response));
-          }
-        });
-
-        player.addListener("not_ready", ({ device_id }) => {
-          console.log("Device ID has gone offline", device_id);
-        });
-      };
-    }
-  }, [accessToken, setDeviceID, setQueuedTracks]);
+      player.addListener("not_ready", ({ device_id }) => {
+        console.log("Device ID has gone offline", device_id);
+      });
+    };
+  }, [accessToken, setDeviceID]);
 
   return (
     <Wrapper>

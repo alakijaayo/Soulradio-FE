@@ -11,6 +11,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import Chat from "../../components/Chat/Chat";
 import { Message } from "../../models/Message";
+import Loader from "../../components/Loader/Loader";
 
 const SOCKET_URL = "http://localhost:8080/soulradio";
 
@@ -68,6 +69,10 @@ function Home() {
       .then((response) => setAccessToken(response.token));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (accessToken === "") {
+    return <Loader />;
+  }
 
   return (
     <Layout userImage={userData.userImage}>

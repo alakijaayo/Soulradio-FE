@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import { StyledBody, Wrapper } from "./Layout.style";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,10 +8,10 @@ interface LayoutProps {
 
 function Layout({ children, userImage }: LayoutProps) {
   return (
-    <>
+    <Wrapper>
       <Header userImage={userImage} />
-      {children}
-    </>
+      <StyledBody>{children}</StyledBody>
+    </Wrapper>
   );
 }
 

@@ -6,10 +6,7 @@ interface ColorProps {
 
 export const QueueList = styled("div")`
   overflow: scroll;
-  height: 100%;
-  margin-top: 30px;
-  height: 80vh;
-  width: 95%;
+  margin: 0 1rem;
 `;
 
 export const QueuedTracksInfo = styled("div")`
@@ -43,6 +40,16 @@ export const ArtistName = styled(Typography)`
 export const VotesCount = styled(Typography)`
   text-align: center;
   font-size: 12px;
+`;
+
+export const Text = styled(Typography)`
+  font-size: 30px;
+  font-weight: 600;
+`;
+
+export const Subtitle = styled(Typography)`
+  font-size: 16px;
+  font-weight: 600;
 `;
 
 export const VoteUpButton = styled(IconButton)<ColorProps>`

@@ -60,7 +60,7 @@ function Chat({
             {isUser ? <Avatar src={image} /> : null}
             <Bubble isUser={isUser}>
               <Text>
-                <Name isUser={isUser}>{isUser ? "You" : name}</Name>
+                <Name user={`${isUser}`}>{isUser ? "You" : name}</Name>
                 <Messages>{message}</Messages>
               </Text>
             </Bubble>

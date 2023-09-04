@@ -7,7 +7,6 @@ export const Wrapper = styled("div")`
 `;
 
 export const StyledTextField = styled(TextField)`
-  margin-top: 30px;
   margin-bottom: 15px;
 `;
 
