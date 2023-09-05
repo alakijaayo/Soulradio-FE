@@ -45,7 +45,7 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
 
       {queuedTracks.map((track, idx) => (
         <QueuedTracksInfo key={`${track.artist} ${track.name} ${idx}`}>
-          <img src={track.image} alt={track.name} />
+          <img src={track.image[2].url} alt={track.name} />
           <TrackInfo>
             <SongTitle>{track.name}</SongTitle>
             <ArtistName>{track.artist}</ArtistName>

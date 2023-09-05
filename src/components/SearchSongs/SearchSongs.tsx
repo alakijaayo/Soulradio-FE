@@ -15,9 +15,14 @@ import {
 interface SearchSongsProps {
   deviceID: string;
   setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
+  setTrack: Dispatch<React.SetStateAction<Tracks | null>>;
 }
 
-function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
+function SearchSongs({
+  deviceID,
+  setQueuedTracks,
+  setTrack,
+}: SearchSongsProps) {
   const [trackName, setTrackName] = useState("");
   const [trackInfo, setTrackInfo] = useState<Tracks[]>([]);
   const URL = "http://localhost:8080/searchtrack?track=" + trackName;
@@ -31,36 +36,53 @@ function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
         const trackArray: Tracks[] = [];
         response.items.forEach((track: Track) => {
           trackArray.push({
-            trackName: track.name,
-            trackArtist: track.artists[0].name,
-            trackuri: track.uri,
-            trackImage: track.album.images,
-            trackDuration: track.durationMs,
-            trackId: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            uri: track.uri,
+            image: track.album.images,
+            duration: track.durationMs,
+            id: track.id,
           });
         });
         setTrackInfo(trackArray);
       });
   };
 
-  const playTrack = async (track: Tracks) => {
+  const queueTrack = async (track: Tracks) => {
     const playURL = `http://localhost:8080/queuetrack?device_id=${deviceID}`;
     fetch(playURL, {
       method: "PUT",
       body: JSON.stringify({
-        name: track.trackName,
-        artist: track.trackArtist,
-        image: track.trackImage[2].url,
-        uri: [track.trackuri],
+        name: track.name,
+        artist: track.artist,
+        image: track.image,
+        uri: [track.uri],
         votesUp: 0,
         votesDown: 0,
+        duration: track.duration,
+        id: track.id,
       }),
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((response) => response.json())
-      .then((response) => setQueuedTracks(response));
+      .then((response) => {
+        setQueuedTracks(response);
+        console.log(response.length);
+
+        if (response.length === 0) {
+          const { name, artist, uri, image, duration, id } = track;
+          setTrack({
+            name,
+            artist,
+            uri,
+            image,
+            duration,
+            id,
+          });
+        }
+      });
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -87,13 +109,13 @@ function SearchSongs({ deviceID, setQueuedTracks }: SearchSongsProps) {
 
       <SongList>
         {trackInfo.map((track, idx) => (
-          <SongInfo key={`${track.trackArtist} ${track.trackName} ${idx}`}>
-            <img src={track.trackImage[2].url} alt={track.trackName} />
+          <SongInfo key={`${track.artist} ${track.name} ${idx}`}>
+            <img src={track.image[2].url} alt={track.name} />
             <TrackInfo>
-              <SongTitle>{track.trackName}</SongTitle>
-              <ArtistName>{track.trackArtist}</ArtistName>
+              <SongTitle>{track.name}</SongTitle>
+              <ArtistName>{track.artist}</ArtistName>
             </TrackInfo>
-            <AddCircleIcon onClick={() => playTrack(track)} />
+            <AddCircleIcon onClick={() => queueTrack(track)} />
           </SongInfo>
         ))}
       </SongList>

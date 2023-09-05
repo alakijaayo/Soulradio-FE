@@ -4,7 +4,7 @@ import Player from "../../components/Player/Player";
 import Queue from "../../components/Queue";
 import SearchSongs from "../../components/SearchSongs";
 import Layout from "../../layout";
-import { QueuedTracks } from "../../models/TrackData";
+import { QueuedTracks, Tracks } from "../../models/TrackData";
 import { User } from "../../models/user";
 import { StyledGrid } from "./Home.style";
 import SockJS from "sockjs-client";
@@ -25,14 +25,12 @@ function Home() {
   const [accessToken, setAccessToken] = useState("");
   const [deviceID, setDeviceID] = useState("");
   const [message, setMessage] = useState("");
+  const [currentTrack, setTrack] = useState<Tracks | null>(null);
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const socket = new SockJS(SOCKET_URL);
   const stompClient = Stomp.over(socket);
 
-  const onConnected = () => {
-    console.log("Connected!!");
-    stompClient.subscribe("/topic/messages", onMessageReceived);
-  };
+  console.log(currentTrack);
 
   const sendMessage = () => {
     if (stompClient) {
@@ -53,7 +51,13 @@ function Home() {
   };
 
   useEffect(() => {
+    const onConnected = () => {
+      console.log("Connected!!");
+      stompClient.subscribe("/topic/messages", onMessageReceived);
+    };
+
     stompClient.connect({}, onConnected);
+
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
       .then((response) =>
@@ -78,7 +82,11 @@ function Home() {
     <Layout userImage={userData.userImage}>
       <StyledGrid container>
         <Grid item md={3}>
-          <SearchSongs deviceID={deviceID} setQueuedTracks={setQueuedTracks} />
+          <SearchSongs
+            deviceID={deviceID}
+            setQueuedTracks={setQueuedTracks}
+            setTrack={setTrack}
+          />
         </Grid>
         <Grid item md={6} container direction="column">
           <Grid item>
@@ -86,6 +94,8 @@ function Home() {
               accessToken={accessToken}
               setDeviceID={setDeviceID}
               setQueuedTracks={setQueuedTracks}
+              currentTrack={currentTrack}
+              setTrack={setTrack}
             />
           </Grid>
           <Grid alignItems="center">
