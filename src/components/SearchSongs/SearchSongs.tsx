@@ -69,16 +69,16 @@ function SearchSongs({
       .then((response) => response.json())
       .then((response) => {
         setQueuedTracks(response);
-        console.log(response.length);
 
         if (response.length === 0) {
           const { name, artist, uri, image, duration, id } = track;
+
           setTrack({
             name,
             artist,
             uri,
             image,
-            duration,
+            duration: duration + 50,
             id,
           });
         }

@@ -19,25 +19,10 @@ import { Dispatch, SetStateAction } from "react";
 interface QueueProps {
   queuedTracks: QueuedTracks[];
   setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
+  sendVote: (track: number, vote: string) => void;
 }
 
-function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
-  const handleOnVote = (track: number, vote: string) => {
-    const votesURL = "http://localhost:8080/votes";
-    fetch(votesURL, {
-      method: "PUT",
-      body: JSON.stringify({
-        trackNumber: track,
-        vote: vote,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => setQueuedTracks(response));
-  };
-
+function Queue({ queuedTracks, setQueuedTracks, sendVote }: QueueProps) {
   return (
     <QueueList>
       <Text>Up Next</Text>
@@ -56,7 +41,7 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
               disableRipple
               disabled={track.votesUp === 1 || track.votesDown === 1}
               active={track.votesUp.toString()}
-              onClick={() => handleOnVote(idx, "up")}
+              onClick={() => sendVote(idx, "up")}
             >
               <ThumbUpAltIcon />
             </VoteUpButton>
@@ -64,7 +49,7 @@ function Queue({ queuedTracks, setQueuedTracks }: QueueProps) {
               disableRipple
               disabled={track.votesUp === 1 || track.votesDown === 1}
               active={track.votesDown.toString()}
-              onClick={() => handleOnVote(idx, "down")}
+              onClick={() => sendVote(idx, "down")}
             >
               <ThumbDownAltIcon />
             </VoteDownButton>

@@ -62,8 +62,6 @@ function Player({
       fetch("http://localhost:8080/getnexttrack")
         .then((response) => response.json())
         .then((response) => {
-          console.log(response);
-
           const { name, artist, uri, image, duration, id } = response;
 
           setTrack({
@@ -71,7 +69,7 @@ function Player({
             artist,
             uri,
             image,
-            duration,
+            duration: duration + 50,
             id,
           });
         });

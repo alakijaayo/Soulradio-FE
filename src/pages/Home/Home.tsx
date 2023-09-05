@@ -30,8 +30,6 @@ function Home() {
   const socket = new SockJS(SOCKET_URL);
   const stompClient = Stomp.over(socket);
 
-  console.log(currentTrack);
-
   const sendMessage = () => {
     if (stompClient) {
       let chatMessage = {
@@ -44,16 +42,33 @@ function Home() {
     }
   };
 
+  const sendVote = (track: number, vote: string) => {
+    if (stompClient) {
+      const voteMessage = {
+        trackNumber: track,
+        vote: vote,
+      };
+      stompClient.send("/app/votes", {}, JSON.stringify(voteMessage));
+    }
+  };
+
   const onMessageReceived = (msg: any) => {
     console.log("Message Received");
     const receivedMessage = JSON.parse(msg.body);
     setReceivedMessages((prevState) => [...prevState, receivedMessage]);
   };
 
+  const onVoteReceived = (msg: any) => {
+    console.log("Vote Received");
+    const voteReceived = JSON.parse(msg.body);
+    setQueuedTracks(voteReceived);
+  };
+
   useEffect(() => {
     const onConnected = () => {
       console.log("Connected!!");
       stompClient.subscribe("/topic/messages", onMessageReceived);
+      stompClient.subscribe("/topic/votes", onVoteReceived);
     };
 
     stompClient.connect({}, onConnected);
@@ -110,6 +125,7 @@ function Home() {
         </Grid>
         <Grid item md={3}>
           <Queue
+            sendVote={sendVote}
             queuedTracks={queuedTracks}
             setQueuedTracks={setQueuedTracks}
           />
