@@ -14,7 +14,7 @@ import { Message } from "../../models/Message";
 
 interface ChatProps {
   message: string;
-  sendMessage: () => void;
+  sendChatMessage: (value: string) => void;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   receivedMessages: Message[];
   username: string;
@@ -22,7 +22,7 @@ interface ChatProps {
 
 function Chat({
   message,
-  sendMessage,
+  sendChatMessage,
   setMessage,
   receivedMessages,
   username,
@@ -47,7 +47,7 @@ function Chat({
           color="primary"
           variant="outlined"
           size="medium"
-          onClick={sendMessage}
+          onClick={() => sendChatMessage("CHAT")}
         >
           Send
         </Button>

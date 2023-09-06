@@ -30,25 +30,39 @@ function Home() {
   const socket = new SockJS(SOCKET_URL);
   const stompClient = Stomp.over(socket);
 
-  const sendMessage = () => {
+  const sendMessage = (value: string, track?: number, vote?: string) => {
     if (stompClient) {
-      let chatMessage = {
-        name: userData.username,
-        image: userData.userImage,
-        message: message,
-      };
-      stompClient.send("/app/sendmessage", {}, JSON.stringify(chatMessage));
-      setMessage("");
-    }
-  };
+      let messageSent = {};
+      switch (value) {
+        case "CHAT":
+          messageSent = {
+            name: userData.username,
+            image: userData.userImage,
+            message: message,
+          };
+          stompClient.send("/app/sendmessage", {}, JSON.stringify(messageSent));
+          setMessage("");
+          break;
+        case "VOTE":
+          messageSent = {
+            trackNumber: track,
+            vote: vote,
+          };
+          stompClient.send("/app/votes", {}, JSON.stringify(messageSent));
+          break;
+        // case "NEXTTRACK":
+        //   console.log("function called");
 
-  const sendVote = (track: number, vote: string) => {
-    if (stompClient) {
-      const voteMessage = {
-        trackNumber: track,
-        vote: vote,
-      };
-      stompClient.send("/app/votes", {}, JSON.stringify(voteMessage));
+        //   stompClient.send("/app/getnexttrack", {});
+        //   break;
+        // case "PLAY":
+        //   stompClient.send("/app/play", {});
+        //   break;
+        // case "QUEUE":
+        //   messageSent = {
+
+        //   }
+      }
     }
   };
 
@@ -116,7 +130,7 @@ function Home() {
           <Grid alignItems="center">
             <Chat
               message={message}
-              sendMessage={sendMessage}
+              sendChatMessage={sendMessage}
               setMessage={setMessage}
               receivedMessages={receivedMessages}
               username={userData.username}
@@ -125,7 +139,7 @@ function Home() {
         </Grid>
         <Grid item md={3}>
           <Queue
-            sendVote={sendVote}
+            sendVote={sendMessage}
             queuedTracks={queuedTracks}
             setQueuedTracks={setQueuedTracks}
           />

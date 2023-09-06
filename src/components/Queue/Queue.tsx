@@ -19,7 +19,7 @@ import { Dispatch, SetStateAction } from "react";
 interface QueueProps {
   queuedTracks: QueuedTracks[];
   setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
-  sendVote: (track: number, vote: string) => void;
+  sendVote: (value: string, track: number, vote: string) => void;
 }
 
 function Queue({ queuedTracks, setQueuedTracks, sendVote }: QueueProps) {
@@ -41,7 +41,7 @@ function Queue({ queuedTracks, setQueuedTracks, sendVote }: QueueProps) {
               disableRipple
               disabled={track.votesUp === 1 || track.votesDown === 1}
               active={track.votesUp.toString()}
-              onClick={() => sendVote(idx, "up")}
+              onClick={() => sendVote("VOTE", idx, "up")}
             >
               <ThumbUpAltIcon />
             </VoteUpButton>
@@ -49,7 +49,7 @@ function Queue({ queuedTracks, setQueuedTracks, sendVote }: QueueProps) {
               disableRipple
               disabled={track.votesUp === 1 || track.votesDown === 1}
               active={track.votesDown.toString()}
-              onClick={() => sendVote(idx, "down")}
+              onClick={() => sendVote("VOTE", idx, "down")}
             >
               <ThumbDownAltIcon />
             </VoteDownButton>
