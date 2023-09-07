@@ -1,13 +1,12 @@
 import { Grid, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { StyledGrid, Text, TextGrid, Wrapper } from "./Player.style";
-import { QueuedTracks, Tracks } from "../../models/TrackData";
+import { Tracks } from "../../models/TrackData";
 
 interface PlayerProps {
   accessToken: string;
   setDeviceID: Dispatch<SetStateAction<string>>;
   setPlayerMessage: (value: string) => void;
-  setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
   setTrack: Dispatch<React.SetStateAction<Tracks | null>>;
   currentTrack: Tracks | null;
 }
@@ -15,7 +14,6 @@ interface PlayerProps {
 function Player({
   accessToken,
   setDeviceID,
-  setQueuedTracks,
   setPlayerMessage,
   setTrack,
   currentTrack,
@@ -60,26 +58,15 @@ function Player({
     const playNextTrack = () => {
       console.log("song ended");
       setTrack(null);
-
       setPlayerMessage("NEXTTRACK");
-
-      fetch("http://localhost:8080/play", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((response) => {
-          setQueuedTracks(response);
-        });
+      setPlayerMessage("PLAY");
     };
 
     if (currentTrack) {
       setTimeout(playNextTrack, currentTrack.duration);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrack, setQueuedTracks, setTrack]);
+  }, [currentTrack, setTrack]);
 
   return (
     <Wrapper>

@@ -72,7 +72,6 @@ function Home() {
           stompClient.send("/app/queuetrack", {}, JSON.stringify(messageSent));
           if (currentTrack === null && song) {
             const { name, artist, uri, image, duration, id } = song;
-
             setTrack({
               name,
               artist,
@@ -82,20 +81,13 @@ function Home() {
               id,
             });
           }
-
           break;
         case "NEXTTRACK":
-          console.log("function called");
-
           stompClient.send("/app/getnexttrack", {});
           break;
-        // case "PLAY":
-        //   stompClient.send("/app/play", {});
-        //   break;
-        // case "QUEUE":
-        //   messageSent = {
-
-        //   }
+        case "PLAY":
+          stompClient.send("/app/play", {});
+          break;
       }
     }
   };
@@ -132,6 +124,12 @@ function Home() {
     });
   };
 
+  const onPlayReceived = (msg: any) => {
+    console.log("Message Received");
+    const playMessage = JSON.parse(msg.body);
+    setQueuedTracks(playMessage);
+  };
+
   useEffect(() => {
     const onConnected = () => {
       console.log("Connected!!");
@@ -139,6 +137,7 @@ function Home() {
       stompClient.subscribe("/topic/votes", onVoteReceived);
       stompClient.subscribe("/topic/queue", onQueueReceived);
       stompClient.subscribe("/topic/nexttrack", onNextTrackReceived);
+      stompClient.subscribe("/topic/play", onPlayReceived);
     };
 
     stompClient.connect({}, onConnected);
@@ -175,7 +174,6 @@ function Home() {
             <Player
               accessToken={accessToken}
               setDeviceID={setDeviceID}
-              setQueuedTracks={setQueuedTracks}
               setPlayerMessage={sendMessage}
               currentTrack={currentTrack}
               setTrack={setTrack}
