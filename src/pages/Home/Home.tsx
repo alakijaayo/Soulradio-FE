@@ -107,21 +107,26 @@ function Home() {
   const onQueueReceived = (msg: any) => {
     console.log("Message Received");
     const queueMessage = JSON.parse(msg.body);
-    setQueuedTracks(queueMessage);
+    if (queueMessage[0]) setQueuedTracks(queueMessage);
   };
 
   const onNextTrackReceived = (msg: any) => {
     console.log("Message Received");
     const nextTrackMessage = JSON.parse(msg.body);
-    const { name, artist, uri, image, duration, id } = nextTrackMessage;
-    setTrack({
-      name,
-      artist,
-      uri,
-      image,
-      duration: duration + 80,
-      id,
-    });
+    const { name, artist, uri, image, duration, id, message } =
+      nextTrackMessage;
+    if (message) {
+      setTrack(null);
+    } else {
+      setTrack({
+        name,
+        artist,
+        uri,
+        image,
+        duration: duration + 80,
+        id,
+      });
+    }
   };
 
   const onPlayReceived = (msg: any) => {
@@ -141,7 +146,7 @@ function Home() {
     };
 
     stompClient.connect({}, onConnected);
-    // stompClient.debug = () => {};
+    stompClient.debug = () => {};
 
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
@@ -176,7 +181,6 @@ function Home() {
               setDeviceID={setDeviceID}
               setPlayerMessage={sendMessage}
               currentTrack={currentTrack}
-              setTrack={setTrack}
             />
           </Grid>
           <Grid alignItems="center">
@@ -190,11 +194,7 @@ function Home() {
           </Grid>
         </Grid>
         <Grid item md={3}>
-          <Queue
-            sendVoteMessage={sendMessage}
-            queuedTracks={queuedTracks}
-            setQueuedTracks={setQueuedTracks}
-          />
+          <Queue sendVoteMessage={sendMessage} queuedTracks={queuedTracks} />
         </Grid>
       </StyledGrid>
     </Layout>

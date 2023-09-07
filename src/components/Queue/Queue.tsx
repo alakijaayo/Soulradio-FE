@@ -14,15 +14,13 @@ import {
   VotesCount,
   VoteUpButton,
 } from "./Queue.style";
-import { Dispatch, SetStateAction } from "react";
 
 interface QueueProps {
   queuedTracks: QueuedTracks[];
-  setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
   sendVoteMessage: (value: string, track: number, vote: string) => void;
 }
 
-function Queue({ queuedTracks, setQueuedTracks, sendVoteMessage }: QueueProps) {
+function Queue({ queuedTracks, sendVoteMessage }: QueueProps) {
   return (
     <QueueList>
       <Text>Up Next</Text>

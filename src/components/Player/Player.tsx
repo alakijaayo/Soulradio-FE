@@ -7,7 +7,6 @@ interface PlayerProps {
   accessToken: string;
   setDeviceID: Dispatch<SetStateAction<string>>;
   setPlayerMessage: (value: string) => void;
-  setTrack: Dispatch<React.SetStateAction<Tracks | null>>;
   currentTrack: Tracks | null;
 }
 
@@ -15,7 +14,6 @@ function Player({
   accessToken,
   setDeviceID,
   setPlayerMessage,
-  setTrack,
   currentTrack,
 }: PlayerProps) {
   useEffect(() => {
@@ -57,7 +55,6 @@ function Player({
   useEffect(() => {
     const playNextTrack = () => {
       console.log("song ended");
-      setTrack(null);
       setPlayerMessage("NEXTTRACK");
       setPlayerMessage("PLAY");
     };
@@ -66,7 +63,7 @@ function Player({
       setTimeout(playNextTrack, currentTrack.duration);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTrack, setTrack]);
+  }, [currentTrack]);
 
   return (
     <Wrapper>
