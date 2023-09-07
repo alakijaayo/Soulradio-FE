@@ -1,6 +1,6 @@
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import { QueuedTracks, Track, Tracks } from "../../models/TrackData";
+import { Track, Tracks } from "../../models/TrackData";
 import {
   ArtistName,
   SearchButton,
@@ -13,16 +13,15 @@ import {
 } from "./SearchSongs.style";
 
 interface SearchSongsProps {
-  deviceID: string;
-  setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
-  setTrack: Dispatch<React.SetStateAction<Tracks | null>>;
+  sendQueueMessage: (
+    value: string,
+    track: number,
+    vote: string,
+    song: Tracks
+  ) => void;
 }
 
-function SearchSongs({
-  deviceID,
-  setQueuedTracks,
-  setTrack,
-}: SearchSongsProps) {
+function SearchSongs({ sendQueueMessage }: SearchSongsProps) {
   const [trackName, setTrackName] = useState("");
   const [trackInfo, setTrackInfo] = useState<Tracks[]>([]);
   const URL = "http://localhost:8080/searchtrack?track=" + trackName;
@@ -45,43 +44,6 @@ function SearchSongs({
           });
         });
         setTrackInfo(trackArray);
-      });
-  };
-
-  const queueTrack = async (track: Tracks) => {
-    const playURL = `http://localhost:8080/queuetrack?device_id=${deviceID}`;
-    fetch(playURL, {
-      method: "PUT",
-      body: JSON.stringify({
-        name: track.name,
-        artist: track.artist,
-        image: track.image,
-        uri: [track.uri],
-        votesUp: 0,
-        votesDown: 0,
-        duration: track.duration,
-        id: track.id,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        setQueuedTracks(response);
-
-        if (response.length === 0) {
-          const { name, artist, uri, image, duration, id } = track;
-
-          setTrack({
-            name,
-            artist,
-            uri,
-            image,
-            duration: duration + 50,
-            id,
-          });
-        }
       });
   };
 
@@ -115,7 +77,9 @@ function SearchSongs({
               <SongTitle>{track.name}</SongTitle>
               <ArtistName>{track.artist}</ArtistName>
             </TrackInfo>
-            <AddCircleIcon onClick={() => queueTrack(track)} />
+            <AddCircleIcon
+              onClick={() => sendQueueMessage("QUEUE", 0, "", track)}
+            />
           </SongInfo>
         ))}
       </SongList>

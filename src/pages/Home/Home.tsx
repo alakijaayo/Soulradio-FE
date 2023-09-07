@@ -30,7 +30,12 @@ function Home() {
   const socket = new SockJS(SOCKET_URL);
   const stompClient = Stomp.over(socket);
 
-  const sendMessage = (value: string, track?: number, vote?: string) => {
+  const sendMessage = (
+    value: string,
+    track?: number,
+    vote?: string,
+    song?: Tracks
+  ) => {
     if (stompClient) {
       let messageSent = {};
       switch (value) {
@@ -49,6 +54,35 @@ function Home() {
             vote: vote,
           };
           stompClient.send("/app/votes", {}, JSON.stringify(messageSent));
+          break;
+        case "QUEUE":
+          messageSent = {
+            device: deviceID,
+            track: {
+              name: song?.name,
+              artist: song?.artist,
+              image: song?.image,
+              uri: [song?.uri],
+              votesUp: 0,
+              votesDown: 0,
+              duration: song?.duration,
+              id: song?.id,
+            },
+          };
+          stompClient.send("/app/queuetrack", {}, JSON.stringify(messageSent));
+          if (currentTrack === null && song) {
+            const { name, artist, uri, image, duration, id } = song;
+
+            setTrack({
+              name,
+              artist,
+              uri,
+              image,
+              duration: duration + 80,
+              id,
+            });
+          }
+
           break;
         // case "NEXTTRACK":
         //   console.log("function called");
@@ -78,14 +112,22 @@ function Home() {
     setQueuedTracks(voteReceived);
   };
 
+  const onQueueReceived = (msg: any) => {
+    console.log("Message Received");
+    const queueMessage = JSON.parse(msg.body);
+    setQueuedTracks(queueMessage);
+  };
+
   useEffect(() => {
     const onConnected = () => {
       console.log("Connected!!");
       stompClient.subscribe("/topic/messages", onMessageReceived);
       stompClient.subscribe("/topic/votes", onVoteReceived);
+      stompClient.subscribe("/topic/queue", onQueueReceived);
     };
 
     stompClient.connect({}, onConnected);
+    stompClient.debug = () => {};
 
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
@@ -111,11 +153,7 @@ function Home() {
     <Layout userImage={userData.userImage}>
       <StyledGrid container>
         <Grid item md={3}>
-          <SearchSongs
-            deviceID={deviceID}
-            setQueuedTracks={setQueuedTracks}
-            setTrack={setTrack}
-          />
+          <SearchSongs sendQueueMessage={sendMessage} />
         </Grid>
         <Grid item md={6} container direction="column">
           <Grid item>
@@ -139,7 +177,7 @@ function Home() {
         </Grid>
         <Grid item md={3}>
           <Queue
-            sendVote={sendMessage}
+            sendVoteMessage={sendMessage}
             queuedTracks={queuedTracks}
             setQueuedTracks={setQueuedTracks}
           />

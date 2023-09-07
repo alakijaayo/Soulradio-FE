@@ -69,7 +69,7 @@ function Player({
             artist,
             uri,
             image,
-            duration: duration + 50,
+            duration: duration + 80,
             id,
           });
         });
