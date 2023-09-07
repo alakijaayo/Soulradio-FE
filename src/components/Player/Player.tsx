@@ -6,6 +6,7 @@ import { QueuedTracks, Tracks } from "../../models/TrackData";
 interface PlayerProps {
   accessToken: string;
   setDeviceID: Dispatch<SetStateAction<string>>;
+  setPlayerMessage: (value: string) => void;
   setQueuedTracks: Dispatch<SetStateAction<QueuedTracks[]>>;
   setTrack: Dispatch<React.SetStateAction<Tracks | null>>;
   currentTrack: Tracks | null;
@@ -15,6 +16,7 @@ function Player({
   accessToken,
   setDeviceID,
   setQueuedTracks,
+  setPlayerMessage,
   setTrack,
   currentTrack,
 }: PlayerProps) {
@@ -59,20 +61,7 @@ function Player({
       console.log("song ended");
       setTrack(null);
 
-      fetch("http://localhost:8080/getnexttrack")
-        .then((response) => response.json())
-        .then((response) => {
-          const { name, artist, uri, image, duration, id } = response;
-
-          setTrack({
-            name,
-            artist,
-            uri,
-            image,
-            duration: duration + 80,
-            id,
-          });
-        });
+      setPlayerMessage("NEXTTRACK");
 
       fetch("http://localhost:8080/play", {
         method: "PUT",
@@ -89,6 +78,7 @@ function Player({
     if (currentTrack) {
       setTimeout(playNextTrack, currentTrack.duration);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTrack, setQueuedTracks, setTrack]);
 
   return (

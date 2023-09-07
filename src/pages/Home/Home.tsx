@@ -84,11 +84,11 @@ function Home() {
           }
 
           break;
-        // case "NEXTTRACK":
-        //   console.log("function called");
+        case "NEXTTRACK":
+          console.log("function called");
 
-        //   stompClient.send("/app/getnexttrack", {});
-        //   break;
+          stompClient.send("/app/getnexttrack", {});
+          break;
         // case "PLAY":
         //   stompClient.send("/app/play", {});
         //   break;
@@ -118,16 +118,31 @@ function Home() {
     setQueuedTracks(queueMessage);
   };
 
+  const onNextTrackReceived = (msg: any) => {
+    console.log("Message Received");
+    const nextTrackMessage = JSON.parse(msg.body);
+    const { name, artist, uri, image, duration, id } = nextTrackMessage;
+    setTrack({
+      name,
+      artist,
+      uri,
+      image,
+      duration: duration + 80,
+      id,
+    });
+  };
+
   useEffect(() => {
     const onConnected = () => {
       console.log("Connected!!");
       stompClient.subscribe("/topic/messages", onMessageReceived);
       stompClient.subscribe("/topic/votes", onVoteReceived);
       stompClient.subscribe("/topic/queue", onQueueReceived);
+      stompClient.subscribe("/topic/nexttrack", onNextTrackReceived);
     };
 
     stompClient.connect({}, onConnected);
-    stompClient.debug = () => {};
+    // stompClient.debug = () => {};
 
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
@@ -161,6 +176,7 @@ function Home() {
               accessToken={accessToken}
               setDeviceID={setDeviceID}
               setQueuedTracks={setQueuedTracks}
+              setPlayerMessage={sendMessage}
               currentTrack={currentTrack}
               setTrack={setTrack}
             />
