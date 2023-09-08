@@ -42,6 +42,11 @@ export const VotesCount = styled(Typography)`
   font-size: 12px;
 `;
 
+export const UserName = styled(Typography)`
+  text-align: center;
+  font-size: 12px;
+`;
+
 export const Text = styled(Typography)`
   font-size: 30px;
   font-weight: 600;

@@ -9,6 +9,7 @@ import {
   Subtitle,
   Text,
   TrackInfo,
+  UserName,
   VoteDownButton,
   Votes,
   VotesCount,
@@ -32,6 +33,7 @@ function Queue({ queuedTracks, sendVoteMessage }: QueueProps) {
           <TrackInfo>
             <SongTitle>{track.name}</SongTitle>
             <ArtistName>{track.artist}</ArtistName>
+            <UserName>Added by {track.username}</UserName>
             <VotesCount>Votes: {track.votesUp - track.votesDown}</VotesCount>
           </TrackInfo>
           <Votes>

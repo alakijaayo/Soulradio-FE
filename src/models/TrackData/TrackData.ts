@@ -23,6 +23,7 @@ export interface QueuedTracks {
   uri: URI[];
   votesUp: number;
   votesDown: number;
+  username: string;
 }
 
 export interface Track {
@@ -41,4 +42,5 @@ export interface Tracks {
   image: Image[];
   duration: number;
   id: string | null;
+  username?: string;
 }

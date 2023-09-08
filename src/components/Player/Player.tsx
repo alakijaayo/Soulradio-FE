@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { StyledGrid, Text, TextGrid, Wrapper } from "./Player.style";
 import { Tracks } from "../../models/TrackData";
@@ -81,6 +81,16 @@ function Player({
               ? currentTrack.artist
               : "Add a track to the queue"}
           </Typography>
+          {currentTrack ? (
+            <Button
+              color="primary"
+              variant="contained"
+              size="medium"
+              disableRipple
+            >
+              SKIP
+            </Button>
+          ) : null}
         </TextGrid>
       </StyledGrid>
     </Wrapper>

@@ -67,6 +67,7 @@ function Home() {
               votesDown: 0,
               duration: song?.duration,
               id: song?.id,
+              username: userData.username.split(" ").slice(0, -1).join(" "),
             },
           };
           stompClient.send("/app/queuetrack", {}, JSON.stringify(messageSent));
