@@ -56,6 +56,7 @@ function SearchSongs({ sendQueueMessage }: SearchSongsProps) {
       <StyledTextField
         variant="outlined"
         size="small"
+        id="Search Songs"
         placeholder="Search Here"
         onChange={handleChange}
       />

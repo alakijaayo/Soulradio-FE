@@ -1,4 +1,4 @@
-import { Grid, styled, Typography } from "@mui/material";
+import { Button, Grid, styled, Typography } from "@mui/material";
 
 export const Wrapper = styled("div")`
   min-height: 320px;
@@ -22,4 +22,14 @@ export const TextGrid = styled(Grid)`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+`;
+
+export const SkipButton = styled(Button)`
+  color: red;
+  border: 1px solid red;
+
+  &:hover {
+    background: transparent;
+    border: 1px solid red;
+  }
 `;

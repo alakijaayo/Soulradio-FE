@@ -106,13 +106,13 @@ function Home() {
   };
 
   const onQueueReceived = (msg: any) => {
-    console.log("Message Received");
+    console.log("Queue Received");
     const queueMessage = JSON.parse(msg.body);
     if (queueMessage[0]) setQueuedTracks(queueMessage);
   };
 
   const onNextTrackReceived = (msg: any) => {
-    console.log("Message Received");
+    console.log("Next Track Received");
     const nextTrackMessage = JSON.parse(msg.body);
     const { name, artist, uri, image, duration, id, message } =
       nextTrackMessage;
@@ -131,19 +131,19 @@ function Home() {
   };
 
   const onPlayReceived = (msg: any) => {
-    console.log("Message Received");
+    console.log("Play Received");
     const playMessage = JSON.parse(msg.body);
     setQueuedTracks(playMessage);
   };
 
   useEffect(() => {
     const onConnected = () => {
-      console.log("Connected!!");
       stompClient.subscribe("/topic/messages", onMessageReceived);
       stompClient.subscribe("/topic/votes", onVoteReceived);
       stompClient.subscribe("/topic/queue", onQueueReceived);
       stompClient.subscribe("/topic/nexttrack", onNextTrackReceived);
       stompClient.subscribe("/topic/play", onPlayReceived);
+      console.log("Connected!!");
     };
 
     stompClient.connect({}, onConnected);
