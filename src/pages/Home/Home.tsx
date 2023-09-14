@@ -89,6 +89,11 @@ function Home() {
         case "PLAY":
           stompClient.send("/app/play", {});
           break;
+        case "LOGGEDIN":
+          messageSent = {
+            name: userData.username,
+          };
+          stompClient.send("/app/loggedin", {}, JSON.stringify(messageSent));
       }
     }
   };
@@ -136,19 +141,12 @@ function Home() {
     setQueuedTracks(playMessage);
   };
 
+  const onLoggedInReceived = (msg: any) => {
+    const loggedInMessage = JSON.parse(msg.body);
+    console.log(loggedInMessage);
+  };
+
   useEffect(() => {
-    const onConnected = () => {
-      stompClient.subscribe("/topic/messages", onMessageReceived);
-      stompClient.subscribe("/topic/votes", onVoteReceived);
-      stompClient.subscribe("/topic/queue", onQueueReceived);
-      stompClient.subscribe("/topic/nexttrack", onNextTrackReceived);
-      stompClient.subscribe("/topic/play", onPlayReceived);
-      console.log("Connected!!");
-    };
-
-    stompClient.connect({}, onConnected);
-    stompClient.debug = () => {};
-
     fetch("http://localhost:8080/username")
       .then((response) => response.json())
       .then((response) =>
@@ -159,11 +157,28 @@ function Home() {
         })
       );
 
+    const onConnected = () => {
+      stompClient.subscribe("/topic/messages", onMessageReceived);
+      stompClient.subscribe("/topic/votes", onVoteReceived);
+      stompClient.subscribe("/topic/queue", onQueueReceived);
+      stompClient.subscribe("/topic/nexttrack", onNextTrackReceived);
+      stompClient.subscribe("/topic/play", onPlayReceived);
+      stompClient.subscribe("/topic/loggedin", onLoggedInReceived);
+      console.log("Connected!!");
+    };
+
+    stompClient.connect({}, onConnected);
+    stompClient.debug = () => {};
+
     fetch("http://localhost:8080/token")
       .then((response) => response.json())
       .then((response) => setAccessToken(response.token));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (userData.username !== "") {
+    setTimeout(() => sendMessage("LOGGEDIN"), 4000);
+  }
 
   if (accessToken === "") {
     return <Loader />;
