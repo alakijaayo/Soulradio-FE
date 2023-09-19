@@ -14,13 +14,15 @@ export const QueuedTracksInfo = styled("div")`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  min-height: 70px;
+  min-height: 80px;
 `;
 
-export const Votes = styled("div")``;
+export const Votes = styled("div")`
+  min-width: 80px;
+`;
 
 export const TrackInfo = styled("div")`
-  padding: 0px 15px;
+  padding: 0px 10px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -29,7 +31,7 @@ export const TrackInfo = styled("div")`
 
 export const SongTitle = styled(Typography)`
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
 `;
 
 export const ArtistName = styled(Typography)`

@@ -4,6 +4,11 @@ interface LoginButtonProps {
   loggedIn: boolean;
 }
 
+const inProduction = process.env.NODE_ENV === "production";
+const url = inProduction
+  ? "https://api.soulradiovibe.com"
+  : "http://localhost:8080";
+
 function LoginButton({ loggedIn }: LoginButtonProps) {
   if (loggedIn) {
     return (
@@ -14,11 +19,7 @@ function LoginButton({ loggedIn }: LoginButtonProps) {
   }
 
   return (
-    <Button
-      color="inherit"
-      variant="outlined"
-      href="http://localhost:8080/login"
-    >
+    <Button color="inherit" variant="outlined" href={url + "/login"}>
       Login
     </Button>
   );

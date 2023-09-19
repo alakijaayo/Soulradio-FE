@@ -5,7 +5,7 @@ import Queue from "../../components/Queue";
 import SearchSongs from "../../components/SearchSongs";
 import Layout from "../../layout";
 import { QueuedTracks, Tracks } from "../../models/TrackData";
-import { User } from "../../models/user";
+import { User, Users } from "../../models/user";
 import { StyledGrid } from "./Home.style";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -13,18 +13,19 @@ import Chat from "../../components/Chat/Chat";
 import { Message } from "../../models/Message";
 import Loader from "../../components/Loader/Loader";
 
-const SOCKET_URL = "http://localhost:8080/soulradio";
+const inProduction = process.env.NODE_ENV === "production";
+const url = inProduction
+  ? "https://api.soulradiovibe.com"
+  : "http://localhost:8080";
+const SOCKET_URL = url + "/soulradio";
 
 function Home() {
-  const [userData, setUserData] = useState<User>({
-    username: "",
-    id: "",
-    userImage: "",
-  });
+  const [userData, setUserData] = useState<User | null>(null);
   const [queuedTracks, setQueuedTracks] = useState<QueuedTracks[]>([]);
   const [accessToken, setAccessToken] = useState("");
   const [deviceID, setDeviceID] = useState("");
   const [message, setMessage] = useState("");
+  const [users, setUsers] = useState<Users | null>(null);
   const [currentTrack, setTrack] = useState<Tracks | null>(null);
   const [receivedMessages, setReceivedMessages] = useState<Message[]>([]);
   const socket = new SockJS(SOCKET_URL);
@@ -41,8 +42,8 @@ function Home() {
       switch (value) {
         case "CHAT":
           messageSent = {
-            name: userData.username,
-            image: userData.userImage,
+            name: userData?.username,
+            image: userData?.userImage,
             message: message,
           };
           stompClient.send("/app/sendmessage", {}, JSON.stringify(messageSent));
@@ -67,7 +68,7 @@ function Home() {
               votesDown: 0,
               duration: song?.duration,
               id: song?.id,
-              username: userData.username.split(" ").slice(0, -1).join(" "),
+              username: userData?.username.split(" ").slice(0, -1).join(" "),
             },
           };
           stompClient.send("/app/queuetrack", {}, JSON.stringify(messageSent));
@@ -91,7 +92,7 @@ function Home() {
           break;
         case "LOGGEDIN":
           messageSent = {
-            name: userData.username,
+            name: userData?.username,
           };
           stompClient.send("/app/loggedin", {}, JSON.stringify(messageSent));
       }
@@ -143,11 +144,11 @@ function Home() {
 
   const onLoggedInReceived = (msg: any) => {
     const loggedInMessage = JSON.parse(msg.body);
-    console.log(loggedInMessage);
+    setUsers(loggedInMessage);
   };
 
   useEffect(() => {
-    fetch("http://localhost:8080/username")
+    fetch(url + "/username")
       .then((response) => response.json())
       .then((response) =>
         setUserData({
@@ -170,25 +171,29 @@ function Home() {
     stompClient.connect({}, onConnected);
     stompClient.debug = () => {};
 
-    fetch("http://localhost:8080/token")
+    fetch(url + "/token")
       .then((response) => response.json())
       .then((response) => setAccessToken(response.token));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (userData.username !== "") {
-    setTimeout(() => sendMessage("LOGGEDIN"), 4000);
-  }
+  useEffect(() => {
+    if (userData) {
+      setTimeout(() => sendMessage("LOGGEDIN"), 2000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userData]);
 
   if (accessToken === "") {
     return <Loader />;
   }
 
   return (
-    <Layout userImage={userData.userImage}>
+    <Layout userImage={userData?.userImage}>
       <StyledGrid container>
         <Grid item md={3}>
-          <SearchSongs sendQueueMessage={sendMessage} />
+          <SearchSongs sendQueueMessage={sendMessage} url={url} />
         </Grid>
         <Grid item md={6} container direction="column">
           <Grid item>
@@ -205,7 +210,7 @@ function Home() {
               sendChatMessage={sendMessage}
               setMessage={setMessage}
               receivedMessages={receivedMessages}
-              username={userData.username}
+              username={userData?.username}
             />
           </Grid>
         </Grid>

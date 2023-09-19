@@ -17,7 +17,7 @@ interface ChatProps {
   sendChatMessage: (value: string) => void;
   setMessage: React.Dispatch<React.SetStateAction<string>>;
   receivedMessages: Message[];
-  username: string;
+  username: string | undefined;
 }
 
 function Chat({

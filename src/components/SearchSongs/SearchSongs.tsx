@@ -13,6 +13,7 @@ import {
 } from "./SearchSongs.style";
 
 interface SearchSongsProps {
+  url: string;
   sendQueueMessage: (
     value: string,
     track: number,
@@ -21,10 +22,10 @@ interface SearchSongsProps {
   ) => void;
 }
 
-function SearchSongs({ sendQueueMessage }: SearchSongsProps) {
+function SearchSongs({ url, sendQueueMessage }: SearchSongsProps) {
   const [trackName, setTrackName] = useState("");
   const [trackInfo, setTrackInfo] = useState<Tracks[]>([]);
-  const URL = "http://localhost:8080/searchtrack?track=" + trackName;
+  const URL = url + "/searchtrack?track=" + trackName;
 
   const searchTrack = async () => {
     fetch(URL)
